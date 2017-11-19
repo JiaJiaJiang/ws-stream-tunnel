@@ -1,6 +1,6 @@
 {
   "name": "ws-stream-tunnel",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "use websocket as a data tunnel",
   "main": "index.js",
   "scripts": {
