@@ -16,6 +16,8 @@ Then the tunnel will be used to transfer stream.
 
 ## server
 
+### Class : tunnelServer(options)
+
 The server class extends from `ws.server`,`options` is the same with [here](https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback).
 
 *One new event*
@@ -47,3 +49,18 @@ The server class extends from `events`.
 * closed : boolean
 * tunnelCreated : boolean
 * tunnel : tunnel of the `mode` options
+
+*methods*
+#### close()
+
+close the client
+
+
+### closeTunnel(reason)
+
+close the tunnel,this method will destroy all alive streams,the reason will be emit as the error event to each stream.
+
+
+# extra
+
+Tunnel types extends from `tunnelManager` class in `tunnel.js`,tunnels are defined in `tunnels` directory.See `README.md` in each dirs.
