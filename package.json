@@ -1,6 +1,10 @@
 {
   "name": "ws-stream-tunnel",
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:JiaJiaJiang/ws-stream-tunnel.git"
+  },
   "description": "use websocket as a data tunnel",
   "main": "index.js",
   "scripts": {
