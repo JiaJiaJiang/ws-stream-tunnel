@@ -34,12 +34,12 @@ let dataToSend=[
 	Buffer.allocUnsafe(20),
 ];
 
-serverSide.on('stream_open',subStream=>{
+serverSide.on('stream_open',stream=>{
 	let dataReceived=[];
-	console.log('server: open subStream')
-	subStream.stream.on('data',d=>{dataReceived.push(d);});
-	subStream.stream.on('end',()=>{
-		console.log('server: subStream closed,comparing data')
+	console.log('server: open stream')
+	stream.on('data',d=>{dataReceived.push(d);});
+	stream.on('end',()=>{
+		console.log('server: stream closed,comparing data')
 		let receivedBuffer=Buffer.concat(dataReceived);
 		if(receivedBuffer.compare(Buffer.concat(dataToSend))===0){
 			console.log('comparing result:pass');
@@ -52,22 +52,20 @@ serverSide.on('stream_open',subStream=>{
 for(let i=0;i<20;i++){//start 20 subStreams to test
 	console.log('client: creating subStream')
 	let sub=clisntSide.createSubStream();
-	sub.on('open',()=>{
+	sub.on('open',stream=>{
 		console.log('client',sub.sid,': subStream opened')
+		console.log('client',sub.sid,': write buffer')
+		stream.write(dataToSend[0]);
+		stream.write(dataToSend[1]);
+		stream.write(dataToSend[2]);
+		stream.end(dataToSend[3],()=>{
+			console.log('client',sub.sid,': buffer written')
+		});
 	}).on('close',()=>{
 		console.log('client',sub.sid,': subStream closed')
 	}).on('error',e=>{
 		console.error('client',sub.sid,':error',e)
 	})
-	console.log('client',sub.sid,': subStream created')
-
-	console.log('client',sub.sid,': write buffer')
-	sub.stream.write(dataToSend[0]);
-	sub.stream.write(dataToSend[1]);
-	sub.stream.write(dataToSend[2]);
-	sub.stream.end(dataToSend[3],()=>{
-		console.log('client',sub.sid,': buffer written')
-	});
 }
 
 

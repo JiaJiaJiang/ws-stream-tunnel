@@ -20,11 +20,11 @@ var tServer=new tunnelServer({
 
 tServer.on('tunnel',t=>{
 	console.log('server','new tunnel')
-	t.on('stream_open',subStream=>{
+	t.on('stream_open',stream=>{
 		let dataReceived=[];
-		subStream.stream.on('data',d=>{dataReceived.push(d);});
-		subStream.stream.on('end',()=>{
-			console.log('server:','subStream ended,comparing data')
+		stream.on('data',d=>{dataReceived.push(d);});
+		stream.on('end',()=>{
+			console.log('server:','stream ended,comparing data')
 			let receivedBuffer=Buffer.concat(dataReceived);
 			if(receivedBuffer.compare(Buffer.concat(dataToSend))===0){
 				console.log('comparing result:pass');
@@ -32,8 +32,8 @@ tServer.on('tunnel',t=>{
 				console.log('comparing result:error');
 			}
 		});
-	}).on('stream_close',subStream=>{
-		console.log('server','subStream closed')
+	}).on('stream_close',stream=>{
+		console.log('server','stream closed')
 	}).once('close',()=>{
 		console.log('server','tunnel closed')
 	})
@@ -54,18 +54,18 @@ tClient.connectionManager.on('_wsclose',ws=>{
 }).on('_wsopen',ws=>{
 	console.log('client','ws opend')
 });
-tClient.tunnel.on('stream_open',subStream=>{
-	console.log('client','subStream opened')
+tClient.tunnel.on('stream_open',stream=>{
+	console.log('client','stream opened')
 	console.log('client','write buffer')
-	subStream.stream.write(dataToSend[0]);
-	subStream.stream.write(dataToSend[1]);
-	subStream.stream.write(dataToSend[2]);
-	subStream.stream.end(dataToSend[3],()=>{
+	stream.write(dataToSend[0]);
+	stream.write(dataToSend[1]);
+	stream.write(dataToSend[2]);
+	stream.end(dataToSend[3],()=>{
 		console.log('client: buffer written')
 	});
 
-}).on('stream_close',subStream=>{
-	console.log('client','subStream closed')
+}).on('stream_close',stream=>{
+	console.log('client','stream closed')
 }).on('error',e=>{
 	console.error('client','error',e)
 }).once('close',()=>{
