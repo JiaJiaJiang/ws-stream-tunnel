@@ -4,6 +4,12 @@ For node.js
 
 use node.js stream over websocket.
 
+## Install
+
+```
+npm i ws-stream-tunnel --save
+```
+
 ## Usage
 Create a `server`,then use `client` to connect it. The client will negotiate with server about the tunnel type and create the same type of the tunnel on both side.
 Then the tunnel will be used to transfer stream.
@@ -56,7 +62,7 @@ The server class extends from `events`.
 close the client
 
 
-### closeTunnel(reason)
+#### closeTunnel(reason)
 
 close the tunnel,this method will destroy all alive streams,the reason will be emit as the error event to each stream.
 
