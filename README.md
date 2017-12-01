@@ -39,7 +39,7 @@ The server class extends from `events`.
 ### Class : tunnelClient(options)
 
 *options*
-* mode : tunnel type.
+* mode : tunnel type
 * retry : max retry limit
 * addr : target ws address
 * ws : options object for ws connection,see [here](https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketaddress-protocols-options)
