@@ -4,6 +4,6 @@ MIT LICENSE
 */
 
 module.exports={
-	client:require('./client.js').tunnelClient,
-	server:require('./server.js').tunnelServer,
+	client:require('./lib/client.js').tunnelClient,
+	server:require('./lib/server.js').tunnelServer,
 }
