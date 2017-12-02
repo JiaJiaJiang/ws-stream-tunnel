@@ -26,6 +26,7 @@ var tClient=new tunnelClient({
 tServer.on('tunnel',t=>{
 	console.log('server','new tunnel')
 	t.on('stream_open',stream=>{
+		console.log('server','stream opened')
 		let dataReceived=[];
 		stream.on('data',d=>{dataReceived.push(d);});
 		stream.on('end',()=>{
@@ -45,17 +46,17 @@ tServer.on('tunnel',t=>{
 
 //client
 tClient.tunnel.on('stream_open',stream=>{
-	console.log('client: stream opened')
-	console.log('client: write buffer')
+	console.log('client','stream opened')
+	console.log('client','write buffer')
 	stream.write(dataToSend[0]);
 	stream.write(dataToSend[1]);
 	stream.write(dataToSend[2]);
 	stream.end(dataToSend[3],()=>{
-		console.log('client: buffer written')
+		console.log('client','buffer written')
 	});
 
 }).on('stream_close',stream=>{
-	console.log('client: subStream closed')
+	console.log('client','stream closed')
 }).on('error',e=>{
 	console.error('client:error',e)
 }).once('close',()=>{
@@ -64,5 +65,5 @@ tClient.tunnel.on('stream_open',stream=>{
 
 tClient.on('tunnel_open',()=>{
 	console.log('client','tunnel opened')
-	var sub=tClient.tunnel.createSubStream();
+	tClient.tunnel.createStream();
 });
