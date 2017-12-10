@@ -53,7 +53,7 @@ for(let i=1;i<=20;i++){//start 20 subStreams to test
 	console.log('client: creating subStream '+i)
 	try{
 		let sub=clisntSide.createSubStream(null,i);
-			sub.on('open',stream=>{
+		sub.on('open',stream=>{
 			console.log('client',sub.sid,': subStream opened')
 			console.log('client',sub.sid,': write buffer')
 			stream.write(dataToSend[0]);
