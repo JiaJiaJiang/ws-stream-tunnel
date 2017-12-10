@@ -2,7 +2,7 @@
 
 streamTunnel extends subStreamTunnel
 
-this tunnel limits stream number to 1,and the only one has a sid 0.
+streamTunnel is a special type of subStreamTunnel,which allows only 1 subStream in the tunnel
 
-subStream with sid 0 has no idBytes part in each frame,which is defined in subStream.js
+the stream in this tunnel dont have idBytes in each frame(cause ths id is 0)
 

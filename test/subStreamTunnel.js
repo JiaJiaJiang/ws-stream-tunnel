@@ -49,28 +49,29 @@ serverSide.on('stream_open',stream=>{
 	});
 })
 
-for(let i=0;i<20;i++){//start 20 subStreams to test
-	console.log('client: creating subStream')
+for(let i=1;i<=20;i++){//start 20 subStreams to test
+	console.log('client: creating subStream '+i)
 	try{
-		var sub=clisntSide.createSubStream();
+		let sub=clisntSide.createSubStream(null,i);
+			sub.on('open',stream=>{
+			console.log('client',sub.sid,': subStream opened')
+			console.log('client',sub.sid,': write buffer')
+			stream.write(dataToSend[0]);
+			stream.write(dataToSend[1]);
+			stream.write(dataToSend[2]);
+			stream.end(dataToSend[3],()=>{
+				console.log('client',sub.sid,': buffer written')
+			});
+		}).on('close',()=>{
+			console.log('client',sub.sid,': subStream closed')
+		}).on('error',e=>{
+			console.error('client',sub.sid,':error',e)
+		})
 	}catch(e){
 		console.error(e);
 		return;
 	}
-	sub.on('open',stream=>{
-		console.log('client',sub.sid,': subStream opened')
-		console.log('client',sub.sid,': write buffer')
-		stream.write(dataToSend[0]);
-		stream.write(dataToSend[1]);
-		stream.write(dataToSend[2]);
-		stream.end(dataToSend[3],()=>{
-			console.log('client',sub.sid,': buffer written')
-		});
-	}).on('close',()=>{
-		console.log('client',sub.sid,': subStream closed')
-	}).on('error',e=>{
-		console.error('client',sub.sid,':error',e)
-	})
+	
 }
 
 
