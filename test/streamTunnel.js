@@ -9,8 +9,8 @@ var clisntSide=new streamTunnel();
 var serverSide=new streamTunnel();
 clisntSide.name='clientSide';
 serverSide.name='serverSide';
-clisntSide.on('invalid_data',d=>console.log('client: invalid_data',d))
-serverSide.on('invalid_data',d=>console.log('server: invalid_data',d))
+/*clisntSide.on('invalid_data',d=>console.log('client: invalid_data',d))
+serverSide.on('invalid_data',d=>console.log('server: invalid_data',d))*/
 
 clisntSide.send=function(data,options,callback){
 	setImmediate(()=>{
@@ -28,10 +28,10 @@ serverSide.send=function(data,options,callback){
 }
 
 let dataToSend=[
-	Buffer.allocUnsafe(20),
-	Buffer.allocUnsafe(20),
-	Buffer.allocUnsafe(20),
-	Buffer.allocUnsafe(20),
+	Buffer.allocUnsafe(245760),
+	Buffer.allocUnsafe(245760),
+	Buffer.allocUnsafe(245760),
+	Buffer.allocUnsafe(245760),
 ];
 
 //server side
@@ -50,7 +50,7 @@ serverSide.on('stream_open',stream=>{
 	}).on('error',e=>{
 		console.error('server','error',e)
 	});
-})
+});
 
 
 //client side
@@ -68,6 +68,3 @@ stream.on('tunnel_stream_open',()=>{
 }).on('error',e=>{
 	console.error('client','error',e)
 });
-
-clisntSide._open();
-serverSide._open();

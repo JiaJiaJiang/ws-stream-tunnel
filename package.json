@@ -19,6 +19,9 @@
   "author": "luojia@luojia.me",
   "license": "MIT",
   "dependencies": {
-    "ws": "^3.3.1"
+    "ws": "^3.3.3"
+  },
+  "devDependencies": {
+    "byte-size": "^4.0.2"
   }
 }
