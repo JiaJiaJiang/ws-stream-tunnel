@@ -19,6 +19,7 @@
   "author": "luojia@luojia.me",
   "license": "MIT",
   "dependencies": {
+    "bufferutil": "^3.0.3",
     "ws": "^3.3.3"
   },
   "devDependencies": {
