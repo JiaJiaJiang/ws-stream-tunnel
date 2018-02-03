@@ -20,6 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "bufferutil": "^3.0.3",
+    "utf-8-validate": "^4.0.0",
     "ws": "^3.3.3"
   },
   "devDependencies": {
