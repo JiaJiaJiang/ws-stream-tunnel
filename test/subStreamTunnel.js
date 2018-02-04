@@ -9,8 +9,8 @@ var clisntSide=new subStreamTunnel();
 var serverSide=new subStreamTunnel();
 clisntSide.name='clientSide';
 serverSide.name='serverSide';
-clisntSide.on('invalid_data',d=>console.log('client: invalid_data',d))
-serverSide.on('invalid_data',d=>console.log('server: invalid_data',d))
+/*clisntSide.on('invalid_data',d=>console.log('client: invalid_data',d))
+serverSide.on('invalid_data',d=>console.log('server: invalid_data',d))*/
 
 clisntSide.send=function(data,options,callback){
 	setImmediate(()=>{

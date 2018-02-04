@@ -15,11 +15,8 @@ const rl = readline.createInterface({
 console.log('starting tunnel server')
 var tServer=new tunnelServer({
 	port:65532,
-	perMessageDeflate:false/*{
-		level:9,
-		memLevel:1,
-
-	}*/,
+	host:'127.0.0.1',
+	perMessageDeflate:false,//affects performance seriously
 });
 
 console.log('starting tunnel client')
@@ -31,9 +28,9 @@ var tClient=new tunnelClient({
 	}
 });
 
-let serverBytesReceived=0;
+let serverBytesReceived=0,clientBytesReceived=0;
 //server
-tServer.on('tunnel',t=>{
+tServer.on('tunnel_open',t=>{
 	console.log('server','new tunnel')
 	t.on('stream_open',stream=>{
 		console.log('server','stream opened')
@@ -41,60 +38,76 @@ tServer.on('tunnel',t=>{
 			serverBytesReceived+=d.byteLength;
 			stream.write(d);//send back
 		});
+	}).on('stream_close',stream=>{
+		console.log('server','stream closed')
 	}).once('close',()=>{
 		console.log('server','tunnel closed')
-	})
+	});
 });
 
 
 //client
-let sentBytes=0;
 let clientStream;
 let totalSize=256000000;
-let clientBytesReceived=0,clientLoggedSize=0;
 let testEnded=false;
-tClient.tunnel.on('stream_open',stream=>{
-	console.log('client','stream opened')
-	clientStream=stream;
-	stream.on('data',d=>{clientBytesReceived+=d.byteLength;});
 
-	setInterval(()=>{
-		if(clientLoggedSize==clientBytesReceived){
-			!testEnded&&askForTesting();
-			testEnded=true;
-			return;
+tClient.on('tunnel_open',t=>{
+	console.log('client','tunnel opened');
+	t.on('stream_open',stream=>{
+		console.log('client','stream opened')
+		let sentBytes=0,clientLoggedSize=0;
+		clientBytesReceived=serverBytesReceived=0;
+		clientStream=stream;
+		stream.on('data',d=>{clientBytesReceived+=d.byteLength;})
+			.once('end',()=>{
+				clearInterval(stream._logInterval);
+				logProgress();
+				setTimeout(()=>{
+					askForTesting();
+				},300);
+			});
+
+		clientStream._logInterval=setInterval(()=>{
+			if(clientBytesReceived===serverBytesReceived){
+				clientStream.end();
+				return;
+			}
+			logProgress();
+		},1000);
+		function logProgress(){
+			if(testEnded)return;
+			let s=byteSize(clientBytesReceived-clientLoggedSize);
+			console.log('server received size:',serverBytesReceived,' client received size:',clientBytesReceived,'speed: ',`${s.value}${s.unit}/s`,`${(clientBytesReceived/totalSize*100).toFixed(1)}%`);
+			clientLoggedSize=clientBytesReceived;
 		}
-		let s=byteSize(clientBytesReceived-clientLoggedSize);
-		console.log('server received size:',serverBytesReceived,' client received size:',clientBytesReceived,'speed: ',`${s.value}${s.unit}/s`,`${(clientBytesReceived/totalSize*100).toFixed(1)}%`);
-		clientLoggedSize=clientBytesReceived;
-	},1000);
-	
-	
 
-}).on('stream_close',stream=>{
-	console.log('client','stream closed')
-}).on('error',e=>{
-	console.error('client:error',e)
-}).once('close',()=>{
-	console.log('client','tunnel closed')
-})
+		function clientSendData(size){
+			testEnded=false;
+			if(t.sendable())
+				clientStream.write(Buffer.allocUnsafe(1024));
+			else return;
+			sentBytes+=size;
+			if(sentBytes<totalSize)
+				setImmediate(clientSendData,size);
+		}
 
-tClient.on('tunnel_open',()=>{
-	console.log('client','tunnel opened')
-	tClient.tunnel.createStream();
+		clientSendData(1024);
+	}).on('stream_close',stream=>{
+		console.log('client','stream closed')
+	}).on('error',e=>{
+		console.error('client:error',e)
+	}).once('close',()=>{
+		console.log('client','tunnel closed')
+	});
+
+	function askForTesting(){
+		rl.question('Strat the test? ', (answer) => {
+			t.createStream();
+		});
+	}
+
+	askForTesting();
 });
 
-function clientSendData(size){
-	testEnded=false;
-	clientStream.write(Buffer.allocUnsafe(size));
-	sentBytes+=size;
-	if(sentBytes<totalSize)
-		setImmediate(clientSendData,size);
-}
 
-function askForTesting(){
-	rl.question('Strat the test? ', (answer) => {
-		sentBytes=clientBytesReceived=serverBytesReceived=clientLoggedSize=serverLoggedSize=0;
-		clientSendData(1024);
-	});
-}
+

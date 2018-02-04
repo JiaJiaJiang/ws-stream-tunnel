@@ -23,7 +23,7 @@ var tClient=new tunnelClient({
 });
 
 //server
-tServer.on('tunnel',t=>{
+tServer.on('tunnel_open',t=>{
 	console.log('server','new tunnel')
 	t.on('stream_open',stream=>{
 		console.log('server','stream opened')
@@ -45,25 +45,25 @@ tServer.on('tunnel',t=>{
 
 
 //client
-tClient.tunnel.on('stream_open',stream=>{
-	console.log('client','stream opened')
-	console.log('client','write buffer')
-	stream.write(dataToSend[0]);
-	stream.write(dataToSend[1]);
-	stream.write(dataToSend[2]);
-	stream.end(dataToSend[3],()=>{
-		console.log('client','buffer written')
-	});
 
-}).on('stream_close',stream=>{
-	console.log('client','stream closed')
-}).on('error',e=>{
-	console.error('client:error',e)
-}).once('close',()=>{
-	console.log('client','tunnel closed')
-})
-
-tClient.on('tunnel_open',()=>{
+tClient.on('tunnel_open',t=>{
 	console.log('client','tunnel opened')
-	tClient.tunnel.createStream();
+	t.on('stream_open',stream=>{
+		console.log('client','stream opened')
+		console.log('client','write buffer')
+		stream.write(dataToSend[0]);
+		stream.write(dataToSend[1]);
+		stream.write(dataToSend[2]);
+		stream.end(dataToSend[3],()=>{
+			console.log('client','buffer written')
+		});
+
+	}).on('stream_close',stream=>{
+		console.log('client','stream closed')
+	}).on('error',e=>{
+		console.error('client:error',e)
+	}).once('close',()=>{
+		console.log('client','tunnel closed')
+	});
+	t.createStream();
 });
