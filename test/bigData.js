@@ -68,7 +68,7 @@ tClient.on('tunnel_open',t=>{
 			});
 
 		clientStream._logInterval=setInterval(()=>{
-			if(clientBytesReceived===serverBytesReceived){
+			if(clientBytesReceived>=totalSize && clientBytesReceived===serverBytesReceived){
 				clientStream.end();
 				return;
 			}
@@ -83,9 +83,12 @@ tClient.on('tunnel_open',t=>{
 
 		function clientSendData(size){
 			testEnded=false;
-			if(t.sendable())
+			if(t.sendable() && clientStream.writable)
 				clientStream.write(Buffer.allocUnsafe(1024));
-			else return;
+			else{
+				console.log('not sendable');
+				return;
+			}
 			sentBytes+=size;
 			if(sentBytes<totalSize)
 				setImmediate(clientSendData,size);

@@ -13,17 +13,17 @@ serverSide.name='serverSide';
 serverSide.on('invalid_data',d=>console.log('server: invalid_data',d))*/
 
 clisntSide.send=function(data,options,callback){
-	setImmediate(()=>{
-		callback&&callback();
 		serverSide.receive(data);
+		callback&&callback();
+	setImmediate(()=>{
 	});
 }
 
 
 serverSide.send=function(data,options,callback){
 	setImmediate(()=>{
-		callback&&callback();
 		clisntSide.receive(data)
+		callback&&callback();
 	});
 }
 
@@ -41,8 +41,10 @@ serverSide.on('stream_open',stream=>{
 	stream.on('data',d=>{dataReceived.push(d);});
 	stream.on('end',()=>{
 		console.log('server','stream closed,comparing data')
-		let receivedBuffer=Buffer.concat(dataReceived);
-		if(receivedBuffer.compare(Buffer.concat(dataToSend))===0){
+		let receivedBuffer=Buffer.concat(dataReceived),
+			shouldReceive=Buffer.concat(dataToSend);
+		console.log('server','received bytes:',receivedBuffer.byteLength,'should receive:',shouldReceive.byteLength)
+		if(receivedBuffer.compare(shouldReceive)===0){
 			console.log('comparing result:pass');
 		}else{
 			console.log('comparing result:error');
