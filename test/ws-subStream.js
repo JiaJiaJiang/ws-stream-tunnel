@@ -24,7 +24,7 @@ var tClient=new tunnelClient({
 
 //server
 tServer.on('tunnel_open',t=>{
-	console.log('server','new tunnel')
+	console.log('server','new tunnel:',t.id)
 	t.on('stream_open',stream=>{
 		console.log('server','stream opened')
 		let dataReceived=[];
@@ -47,7 +47,7 @@ tServer.on('tunnel_open',t=>{
 //client
 
 tClient.on('tunnel_open',t=>{
-	console.log('client','tunnel opened')
+	console.log('client','tunnel opened:',t.id)
 	t.on('stream_open',stream=>{
 		console.log('client','stream opened')
 		console.log('client','write buffer')
