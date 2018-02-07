@@ -11,8 +11,66 @@ npm i ws-stream-tunnel --save
 ```
 
 ## Usage
-Create a `server`,then use `client` to connect it. The client will negotiate with server about the tunnel type and create the same type of the tunnel on both side.
+Create a `server`,then use `client` to connect it. The client will negotiate with server about the tunnel type.(Both sides can create streams in the tunnel)
 Then the tunnel will be used to transfer stream.
+
+```none
+websocket connection
+|_one of the tunnel types
+   |_stream(s)
+      |_data
+```
+
+```javascript
+const {server,client}=require('ws-stream-tunnel');
+
+//server
+const tServer=new server({
+	port:80,
+	perMessageDeflate:false,
+});
+tServer.on('tunnel_open',t=>{
+	console.log('server','new tunnel');
+
+	t.on('stream_open',stream=>{
+		console.log('server','stream opened');
+		
+		//do sth with the stream
+		stream.on('data',chunk=>{
+			console.log('server','recevied data',chunk)
+		});
+
+	}).once('close',()=>{
+		console.log('server','tunnel closed')
+	})
+});
+
+
+//client
+const tClient=new client({
+	addr:'ws://127.0.0.1:80',
+	mode:'subStream',
+});
+tClient.on('tunnel_open',tunnel=>{
+	console.log('client','tunnel opened');
+
+	tunnel.on('stream_open',stream=>{
+		console.log('client','stream opened')
+		
+		//do sth with the stream
+		stream.write('poi');
+
+	}).on('stream_close',stream=>{
+		console.log('client','stream closed')
+	}).on('error',e=>{
+		console.error('client:error',e)
+	}).once('close',()=>{
+		console.log('client','tunnel closed')
+	});
+
+	tunnel.createStream();//create a sub stream
+});
+```
 
 ## Tunnel types
 
@@ -27,7 +85,7 @@ Then the tunnel will be used to transfer stream.
 
 The server class extends from `ws.server`,`options` is the same with [here](https://github.com/websockets/ws/blob/master/doc/ws.md#new-websocketserveroptions-callback).
 
-*One new event*
+*Two new event*
 * 'tunnel_open' : (new tunnel)
 * 'tunnel_close' : (the closed tunnel)
 
@@ -78,6 +136,14 @@ options:
 * keepBrokenTunnel : see `tunnelClient` options
 
 If tunnelID exists, the client will attempt to use the tunnel ID to resume the broken tunnel transfer.
+
+### Class:  tunnelHelper
+
+this class is used in client and server to manage tunnels
+
+*properties*
+
+* tunnels : a Map stores all tunnels (tunnelID=>tunnel)
 
 # extra
 
