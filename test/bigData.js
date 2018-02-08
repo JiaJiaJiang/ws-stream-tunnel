@@ -110,7 +110,7 @@ tClient.on('tunnel_open',t=>{
 	}
 
 	askForTesting();
-});
+}).connect();
 
 
 
