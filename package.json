@@ -21,7 +21,8 @@
   "dependencies": {
     "bufferutil": "^3.0.3",
     "utf-8-validate": "^4.0.0",
-    "ws": "^4.0.0"
+    "ws": "^4.0.0",
+    "debug": "^3.1.0"
   },
   "devDependencies": {
     "byte-size": "^4.0.2"
